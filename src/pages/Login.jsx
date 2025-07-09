@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from 'react-router-dom';
-
 import { useGlobalContext } from "../Context/Context";
 import BarcodeScannerComponent from "react-qr-barcode-scanner";
 import axios from "axios";
@@ -15,7 +14,6 @@ const Login = () => {
   const [selectedLocation, setSelectedLocation] = useState(null);
   const [saveMessage, setSaveMessage] = useState("");
   const navigate = useNavigate();
-
 
   useEffect(() => {
     const storedEmployee = window.localStorage.getItem("employee");
@@ -80,16 +78,13 @@ const Login = () => {
   const handleLocationClick = (location) => {
     setSelectedLocation(location);
     setSaveMessage("");
-
     const updatedEmployee = {
       ...employeeData,
-      locations: [location], // Keep only the selected location
+      locations: [location],
     };
-
-    setEmployeeData(updatedEmployee); // Update local state
-    localStorage.setItem("employee", JSON.stringify(updatedEmployee)); // Update localStorage
-     // Redirect to scanner page
-  navigate('/scanner');
+    setEmployeeData(updatedEmployee);
+    localStorage.setItem("employee", JSON.stringify(updatedEmployee));
+    navigate('/scanner');
   };
 
   const saveEmployeeLocation = async () => {
@@ -105,10 +100,7 @@ const Login = () => {
         location_id: selectedLocation.id,
         location_name: selectedLocation.name,
       };
-
-      // ✅ Replace this URL with your actual API endpoint
       await axios.post("/api/save-employee-location", payload);
-
       setSaveMessage("Location saved successfully!");
     } catch (error) {
       console.error("Error saving location:", error);
@@ -202,8 +194,6 @@ const Login = () => {
     );
   }
 
-  // Return Login Form if not logged in
-
   return (
     <div className="min-h-screen p-4 bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8">
       <div className="sm:mx-auto sm:w-full sm:max-w-md">
@@ -217,29 +207,10 @@ const Login = () => {
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
         <div className="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-          {/* <form className="space-y-6" onSubmit={handleSubmit}> */}
           <form id="loginForm" className="space-y-6" onSubmit={handleSubmit}>
             {error && (
-              <div className="rounded-md bg-red-50 p-4">
-                <div className="flex">
-                  <div className="flex-shrink-0">
-                    <svg
-                      className="h-5 w-5 text-red-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </div>
-                  <div className="ml-3">
-                    <p className="text-sm font-medium text-red-800">{error}</p>
-                  </div>
-                </div>
+              <div className="rounded-md bg-red-50 p-4 text-red-700 text-sm">
+                {error}
               </div>
             )}
 
@@ -250,51 +221,6 @@ const Login = () => {
               >
                 Employee ID
               </label>
-              {/* <div className="mt-1 relative rounded-md shadow-sm">
-                <input
-                  id="employeeIdInput"
-                  name="employeeId"
-                  type="text"
-                  autoComplete="off"
-                  value={inputValue}
-                  onChange={handleInputChange}
-                  className={`focus:ring-${scanning ? 'blue' : 'indigo'}-500 focus:border-${
-                    scanning ? 'blue' : 'indigo'
-                  }-500 block w-full pr-10 sm:text-sm border-gray-300 rounded-md py-3 px-4 ${
-                    scanning ? 'border-blue-500 bg-blue-50' : ''
-                  }`}
-                  placeholder={scanning ? 'Ready to scan...' : 'Enter employee ID'}
-                />
-                <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-                  {scanning ? (
-                    <svg
-                      className="h-5 w-5 text-blue-500 animate-pulse"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  ) : (
-                    <svg
-                      className="h-5 w-5 text-gray-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  )}
-                </div>
-              </div> */}
               <div className="mt-1 relative rounded-md shadow-sm">
                 {scanning ? (
                   <div className="border border-blue-300 rounded-md overflow-hidden">
@@ -302,16 +228,20 @@ const Login = () => {
                       width={400}
                       height={200}
                       onUpdate={(err, result) => {
-                        if (result) {
-                          setScannedValue(result.text);
+                        if (err) {
+                          console.error("Scanner error:", err);
+                          return;
+                        }
+                        if (result?.text) {
                           setInputValue(result.text);
                           setScanning(false);
                           setTimeout(() => {
-                            document
-                              .getElementById("loginForm")
-                              ?.requestSubmit(); // submit form programmatically
-                          }, 500);
+                            document.getElementById("loginForm")?.requestSubmit();
+                          }, 300);
                         }
+                      }}
+                      videoConstraints={{
+                        facingMode: "environment",
                       }}
                     />
                     <p className="text-sm text-center text-gray-500 mt-2">
@@ -326,12 +256,8 @@ const Login = () => {
                     autoComplete="off"
                     value={inputValue}
                     onChange={handleInputChange}
-                    className={`focus:ring-${
-                      scanning ? "blue" : "indigo"
-                    }-500 focus:border-${
-                      scanning ? "blue" : "indigo"
-                    }-500 block w-full pr-10 sm:text-sm border-gray-300 rounded-md py-3 px-4`}
-                    placeholder={scanning ? "Scanning..." : "Enter employee ID"}
+                    className="block w-full px-4 py-3 sm:text-sm border-gray-300 rounded-md"
+                    placeholder="Enter employee ID"
                   />
                 )}
               </div>
@@ -341,50 +267,18 @@ const Login = () => {
               <button
                 type="button"
                 onClick={toggleScanning}
-                className={`flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md ${
+                className={`flex items-center px-4 py-2 text-sm font-medium rounded-md ${
                   scanning
                     ? "bg-red-100 text-red-700 hover:bg-red-200"
                     : "bg-blue-100 text-blue-700 hover:bg-blue-200"
                 }`}
               >
-                {scanning ? (
-                  <>
-                    <svg
-                      className="-ml-1 mr-2 h-5 w-5 text-red-500"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Cancel Scanning
-                  </>
-                ) : (
-                  <>
-                    <svg
-                      className="-ml-1 mr-2 h-5 w-5 text-blue-500"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Scan Barcode
-                  </>
-                )}
+                {scanning ? "Cancel Scanning" : "Scan Barcode"}
               </button>
 
               <button
                 type="submit"
-                className="px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="px-4 py-2 text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700"
               >
                 Login
               </button>
