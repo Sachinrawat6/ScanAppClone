@@ -12,6 +12,7 @@ const Scanner = () => {
   const [employeeData, setEmployeeData] = useState({});
   const [showScanner, setShowScanner] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [scanMethod, setScanMethod] = useState(null); // 'camera' or 'manual'
   const inputRef = useRef(null);
 
   useEffect(() => {
@@ -28,10 +29,11 @@ const Scanner = () => {
     navigate('/');
   };
 
-  const handleScan = async (scannedId) => {
+  const handleScan = async (scannedId, method) => {
     if (!scannedId) return;
-    setShowScanner(false);
+    
     setOrderId(scannedId);
+    setScanMethod(method);
 
     try {
       const payload = {
@@ -42,8 +44,19 @@ const Scanner = () => {
 
       const response = await axios.post(`${BASE_URL}/scan`, payload);
       setScannedData(response.data.data);
-      setOrderId("")
-      inputRef.current.focus();
+      setOrderId("");
+      
+      // Different behavior based on scan method
+      if (method === 'camera') {
+        setShowScanner(false);
+      } else {
+        inputRef.current.focus();
+      }
+      
+      setTimeout(() => {
+        setScannedData(null);
+      }, 1000);
+      
       setErrorMsg('');
     } catch (error) {
       setScannedData(null);
@@ -52,9 +65,14 @@ const Scanner = () => {
     }
   };
 
+  const handleScanAgain = () => {
+    setShowScanner(true);
+    setScannedData(null);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8 px-4">
-      <div className="max-w-md mx-auto bg-white rounded-xl  overflow-hidden">
+      <div className="max-w-md mx-auto bg-white rounded-xl overflow-hidden">
         <div className="p-8">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-2xl font-bold text-gray-800">
@@ -78,7 +96,7 @@ const Scanner = () => {
                 height={300}
                 onUpdate={(err, result) => {
                   if (result?.text) {
-                    handleScan(result.text);
+                    handleScan(result.text, 'camera');
                   }
                 }}
               />
@@ -101,28 +119,51 @@ const Scanner = () => {
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition"
                 value={orderId}
                 onChange={(e) => setOrderId(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleScan(orderId, 'manual');
+                  }
+                }}
               />
             </div>
           )}
 
           <div className="flex flex-col space-y-3 mb-6">
-            <button
-              onClick={() => handleScan(orderId)}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg shadow-sm transition-colors"
-            >
-              {showScanner ? 'Capture Scan' : 'Submit Order ID'}
-            </button>
+            {!showScanner ? (
+              <>
+                <button
+                  onClick={() => handleScan(orderId, 'manual')}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-lg shadow-sm transition-colors"
+                >
+                  Submit Order ID
+                </button>
+                <button
+                  onClick={() => {
+                    setShowScanner(true);
+                    setScanMethod('camera');
+                  }}
+                  className="w-full bg-blue-100 hover:bg-blue-200 text-blue-800 font-medium py-3 px-4 rounded-lg shadow-sm transition-colors"
+                >
+                  Open Barcode Scanner
+                </button>
+              </>
+            ) : (
+              <button
+                onClick={() => setShowScanner(false)}
+                className="w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-3 px-4 rounded-lg shadow-sm transition-colors"
+              >
+                Close Scanner
+              </button>
+            )}
 
-            <button
-              onClick={() => setShowScanner(!showScanner)}
-              className={`w-full font-medium py-3 px-4 rounded-lg shadow-sm transition-colors ${
-                showScanner
-                  ? 'bg-gray-200 hover:bg-gray-300 text-gray-800'
-                  : 'bg-blue-100 hover:bg-blue-200 text-blue-800'
-              }`}
-            >
-              {showScanner ? 'Close Scanner' : 'Open Barcode Scanner'}
-            </button>
+            {scanMethod === 'camera' && !showScanner && scannedData === null && (
+              <button
+                onClick={handleScanAgain}
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-lg shadow-sm transition-colors"
+              >
+                Scan Again
+              </button>
+            )}
           </div>
 
           {errorMsg && (
