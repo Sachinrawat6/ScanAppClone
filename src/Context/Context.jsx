@@ -26,13 +26,30 @@ const fetchEmployeeId = async()=>{
     }
 }
 
+
+const updateLastScanner = async(scanData)=>{
+    try {
+        const payload = {
+            
+            order_number: Number(scanData.order_id),
+            user_id: Number(scanData.user_id),
+            user_location_id: Number(scanData.user_location_id),
+          };      
+        const response = await axios.post(`${BASE_URL}/scan`,payload);
+        return response.data 
+
+    } catch (error) {
+        setError("Failed to scan qr code", error);
+    }
+}
+
 useEffect(()=>{
     fetchEmployeeId()
 },[]);
 
 
 
-    return <ProductContext.Provider  value={{fetchEmployeeId, loading, employeeId, error}} >  {children} </ProductContext.Provider>
+    return <ProductContext.Provider  value={{fetchEmployeeId, loading, employeeId, error, updateLastScanner}} >  {children} </ProductContext.Provider>
 }
 
 const useGlobalContext = ()=>{

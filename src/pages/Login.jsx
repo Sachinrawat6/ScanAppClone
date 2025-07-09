@@ -169,7 +169,7 @@ const Login = () => {
               </ul>
             </div>
 
-            <div className="mt-6 space-y-2">
+            {/* <div className="mt-6 space-y-2">
               <button
                 onClick={saveEmployeeLocation}
                 className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700"
@@ -187,7 +187,7 @@ const Login = () => {
               >
                 Logout
               </button>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
