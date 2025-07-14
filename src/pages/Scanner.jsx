@@ -53,9 +53,9 @@ const Scanner = () => {
         inputRef.current.focus();
       }
       
-      setTimeout(() => {
-        setScannedData(null);
-      }, 1000);
+      // setTimeout(() => {
+      //   setScannedData(null);
+      // }, 1000);
       
       setErrorMsg('');
     } catch (error) {
@@ -190,7 +190,7 @@ const Scanner = () => {
 
           {scannedData && (
             <div className="mt-6 border border-gray-200 rounded-lg overflow-hidden">
-              <div className="bg-gray-800 text-white px-4 py-3">
+              <div className="bg-gray-200 text-gray-600 px-4 py-3">
                 <h3 className="font-semibold">Scan Details</h3>
               </div>
               <div className="divide-y divide-gray-200">
