@@ -53,9 +53,9 @@ const Scanner = () => {
         inputRef.current.focus();
       }
       
-      // setTimeout(() => {
-      //   setScannedData(null);
-      // }, 1000);
+      setTimeout(() => {
+        setScannedData(null);
+      }, 5000);
       
       setErrorMsg('');
     } catch (error) {
